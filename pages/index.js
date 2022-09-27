@@ -7,44 +7,52 @@ import WrongLetter from '../components/WrongLetter'
 import Word from '../components/Word'
 import Notification from '../components/Notification'
 import PopUp from '../components/PopUp'
-import {showNotification as show} from '../helpers/helpers'
+import {showNotification as show, checkWin } from '../helpers/helpers'
 import {useState,useEffect} from 'react'
 
+const words = ['application', 'programming', 'interface', 'wizard'];
+let selectedWord = words[Math.floor(Math.random() * words.length)];
 
 export default function Home() {
-    const words = ['application', 'programming', 'interface', 'wizard'];
-    let selectedWord = words[Math.floor(Math.random() * words.length)];
-    const [playable, setplayable]  = useState(true);
-    const [correctLetters, setcorrectLetters]  = useState([]);
-    const [wrongLetters, setwrongLetters]  = useState([]);
+    const [playable, setPlayable]  = useState(true);
+    const [correctLetters, setCorrectLetters]  = useState([]);
+    const [wrongLetters, setWrongLetters]  = useState([]);
     const [showNotification, setshowNotification]  = useState(false);
-    useEffect(()=>{
-        const handleKeyDown = event =>{
-            const {key,keyCode} = event
+    useEffect(() => {
+        const handleKeydown = event => {
+            const { key, keyCode } = event;
             if (playable && keyCode >= 65 && keyCode <= 90) {
                 const letter = key.toLowerCase();
-
                 if (selectedWord.includes(letter)) {
                     if (!correctLetters.includes(letter)) {
-                        setcorrectLetters(correctLetters => [...correctLetters, letter]);
+                        setCorrectLetters(currentLetters => [...currentLetters, letter]);
                     } else {
                         show(setshowNotification);
                     }
                 } else {
                     if (!wrongLetters.includes(letter)) {
-                        setwrongLetters(wrongLetters => [...wrongLetters, letter]);
+                        setWrongLetters(currentLetters => [...currentLetters, letter]);
                     } else {
                         show(setshowNotification);
                     }
                 }
             }
         }
+        window.addEventListener('keydown', handleKeydown);
 
-        window.addEventListener('keydown', handleKeyDown)
-        return () => window.removeEventListener('keydown', handleKeyDown)
-    },[correctLetters,wrongLetters,playable])
+        return () => window.removeEventListener('keydown', handleKeydown);
+    }, [correctLetters, wrongLetters, playable]);
     
+    function playAgain() {
+        setPlayable(true);
 
+        // Empty Arrays
+        setCorrectLetters([]);
+        setWrongLetters([]);
+
+        const random = Math.floor(Math.random() * words.length);
+        selectedWord = words[random];
+    }
     return (
         <div>
             <Header />
@@ -53,7 +61,7 @@ export default function Home() {
                 <WrongLetter wrongLetters={wrongLetters}/>
                 <Word selectedWord={selectedWord} correctLetters={correctLetters}/>
             </div>
-            <PopUp />
+            <PopUp correctLetters={correctLetters} wrongLetters={wrongLetters} selectedWord={selectedWord} setPlayable={setPlayable} playAgain={playAgain} />
             <Notification showNotification={showNotification}/>
         </div>
     )
