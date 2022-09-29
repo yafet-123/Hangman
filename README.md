@@ -1,4 +1,4 @@
-# Tesla-Clone
+# Hang Clone
 
 A Responsive Hangman created with Next.js.
 
