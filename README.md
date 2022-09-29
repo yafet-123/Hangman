@@ -1,4 +1,4 @@
-# Hang Clone
+# Hangman
 
 A Responsive Hangman created with Next.js.
 
